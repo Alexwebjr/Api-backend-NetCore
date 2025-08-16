@@ -1,0 +1,66 @@
+<div class="container mt-4">
+    <!--LISTADO-->
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="col">
+            <h2>Listado de Contribuyentes</h2>
+        </div>
+        <div class="col text-end">
+            Total: $
+        </div>
+    </div>
+
+    <div>
+        <table class="table table-bordered table-hover mt-3">
+            <thead class="table-dark">
+                <tr>
+                <th>RNC / Cédula</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Estatus</th>
+                <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (c of contribuyentes; track c.rncCedula){
+                <tr>
+                <td>{{ c.rncCedula }}</td>
+                <td>{{ c.nombre }}</td>
+                <td>{{ c.tipo }}</td>
+                <td>
+                    <span [class]="getAlertClass(c.estatus)">
+                    {{ c.estatus | titlecase }}
+                    </span>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-light" (click)="verComprobantes(c.rncCedula)">Comprobantes Fiscales</button>
+                </td>
+                </tr>
+                } 
+                @empty {
+                    <tr><td>No hay datos</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!--MODAL DETALLE-->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="exampleModalLabel">Comprobantes Fiscales</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <app-listado-comprobantes-fiscales [contribuyente]="contribuyente" [comprobantes]="comprobantes" />
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cerrarModal()">Cerrar</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+  </div>
+  
