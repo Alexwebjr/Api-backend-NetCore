@@ -8,6 +8,15 @@ namespace ApiTestBK.Controllers
     [ApiController]
     public class ContribuyentesController : ControllerBase
     {
+        //Inyección de dependencias + Log
+        private readonly ILogger<ContribuyentesController> _logger;
+
+        public ContribuyentesController(ILogger<ContribuyentesController> logger)
+        {
+            _logger = logger;
+        }
+
+
         // Temporal Data
         private static readonly List<Contribuyente> Contribuyentes = new()
 {
@@ -79,7 +88,22 @@ namespace ApiTestBK.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Contribuyente>> GetAll()
         {
+            _logger.LogInformation("Entrando al mmétodo GetAll Contribuyentes");
+
             return Ok(Contribuyentes);
+        }
+       
+        // GET: api/Contribuyentes/00112345678
+        [HttpGet("{rncCedula}")]
+        public ActionResult<Contribuyente> GetByRncCedula(string rncCedula)
+        {
+            _logger.LogInformation("Entrando al mmétodo Get Contribuyente by RncCedula");
+
+            var contribuyente = Contribuyentes.FirstOrDefault(c => c.RncCedula == rncCedula);
+            if (contribuyente == null)
+                return NotFound();
+
+            return Ok(contribuyente);
         }
 
         //// GET: api/Contribuyentes/2
@@ -93,15 +117,5 @@ namespace ApiTestBK.Controllers
         //    return Ok(contribuyente);
         //}
 
-        // GET: api/Contribuyentes/00112345678
-        [HttpGet("{rncCedula}")]
-        public ActionResult<Contribuyente> GetByRncCedula(string rncCedula)
-        {
-            var contribuyente = Contribuyentes.FirstOrDefault(c => c.RncCedula == rncCedula);
-            if (contribuyente == null)
-                return NotFound();
-
-            return Ok(contribuyente);
-        }
     }
-    }
+}

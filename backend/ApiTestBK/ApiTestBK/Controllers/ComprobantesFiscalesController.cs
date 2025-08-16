@@ -8,6 +8,14 @@ namespace ApiTestBK.Controllers
     [ApiController]
     public class ComprobantesFiscalesController : ControllerBase
     {
+        //Inyección de dependencias + Log
+        private readonly ILogger<ComprobantesFiscalesController> _logger;
+
+        public ComprobantesFiscalesController(ILogger<ComprobantesFiscalesController> logger)
+        {
+            _logger = logger;
+        }
+
         //Temporal Data
         private static readonly List<ComprobanteFiscal> Comprobantes = new()
         {
@@ -81,6 +89,7 @@ namespace ApiTestBK.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<ComprobanteFiscal>> GetAll()
         {
+            _logger.LogInformation("Entrando al mmétodo GetAll Comprobantes");
             return Ok(Comprobantes);
         }
 
@@ -88,6 +97,8 @@ namespace ApiTestBK.Controllers
         [HttpGet("{id}")]
         public ActionResult<ComprobanteFiscal> GetById(int id)
         {
+            _logger.LogInformation("Entrando al mmétodo GetById Comprobantes");
+
             var comprobantes = Comprobantes.FirstOrDefault(c => c.Id == id);
             if (comprobantes == null)
                 return NotFound();
@@ -99,6 +110,8 @@ namespace ApiTestBK.Controllers
         [HttpGet("listado/{rncCedula}")]
         public ActionResult<IEnumerable<ComprobanteFiscal>> GetByRncCedula(string rncCedula)
         {
+            _logger.LogInformation("Entrando al mmétodo GetByRncCedula Comprobantes");
+
             var comprobantes = Comprobantes.Where(c => c.RncCedula == rncCedula);
             if (comprobantes == null)
                 return NotFound();
