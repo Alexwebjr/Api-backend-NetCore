@@ -18,11 +18,11 @@
                 <th>Nombre</th>
                 <th>Tipo</th>
                 <th>Estatus</th>
-                <th>Action</th>
+                <th>Comprobantes Fiscales</th>
                 </tr>
             </thead>
             <tbody>
-                @for (c of contribuyentes; track c.rncCedula){
+                @for (c of contribuyentes; track c.id){
                 <tr>
                 <td class="text-center">
                     <input 
@@ -41,31 +41,30 @@
                     </span>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-light" (click)="verComprobantes(c)">Comprobantes Fiscales</button>
+                    <button type="button" class="btn btn-outline-secondary" (click)="verComprobantes(c)"><i class="bi bi-eye"></i>Detalles</button>
                 </td>
                 </tr>
                 } 
                 @empty {
-                    <tr><td>No hay datos</td>
-                    </tr>
+                    <div></div><span class="text-center">No hay datos</span>
                 }
             </tbody>
         </table>
     </div>
 
     <!--MODAL DETALLE-->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="comprobanteModal" tabindex="-1" aria-labelledby="comrprobanteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title fs-5" id="exampleModalLabel">Comprobantes Fiscales</h2>
+                <h2 class="modal-title fs-5" id="comrprobanteModalLabel">Comprobantes Fiscales</h2>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <app-listado-comprobantes-fiscales [contribuyente]="contribuyente" [comprobantes]="comprobantes" />
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cerrarModal()">Cerrar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cerrar</button>
             </div>
         </div>
         </div>

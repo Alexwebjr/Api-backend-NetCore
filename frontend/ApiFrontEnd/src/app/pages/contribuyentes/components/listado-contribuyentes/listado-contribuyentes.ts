@@ -46,13 +46,11 @@ export class ListadoContribuyentes {
   verComprobantes(contribuyente: Contribuyente) {
     this.selectedContribuyente(contribuyente);
     this.comprobantes = this.contribuyente?.comprobantesFiscales || [];
-    console.log(this.contribuyente);
-    console.log(this.comprobantes);
     this.abrirModal();
   }
 
   abrirModal() {
-    const modalEl = document.getElementById('exampleModal');
+    const modalEl = document.getElementById('comprobanteModal');
     if (modalEl) {
       this.modalInstance = new Modal(modalEl, {});
       this.modalInstance.show();

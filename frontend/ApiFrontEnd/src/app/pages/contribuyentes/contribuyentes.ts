@@ -21,8 +21,15 @@ export class Contribuyentes {
 
   fetchContribuyentes(){
     this.contribuyenteService.getContribuyentes()
-      .subscribe(data => console.log(data));
-      //.subscribe(data => this.contribuyentes = data);
+      //.subscribe(data => console.log(data));
+      .subscribe({
+        next: data => this.contribuyentes = data,
+        error: err => {
+          console.error('Error al obtener contribuyentes:', err);
+          //aqui podemos poner alertas para notificar al usuario
+        },
+        complete: () => console.log('Carga de contribuyentes completada')
+      });
   }
   
 }
