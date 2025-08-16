@@ -1,0 +1,47 @@
+# ------------------------
+# Archivos de Visual Studio
+# ------------------------
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ------------------------
+# Carpetas de compilación
+# ------------------------
+bin/
+obj/
+[Bb]uild/
+[Bb]uilds/
+
+# ------------------------
+# Logs y diagnósticos
+# ------------------------
+*.log
+*.tlog
+*.svclog
+*.pdb
+
+# ------------------------
+# Archivos temporales del sistema
+# ------------------------
+[Tt]humbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# ------------------------
+# Archivos de pruebas y cobertura
+# ------------------------
+*.coverage
+*.coveragexml
+*.testresults
+TestResults/
+
+# ------------------------
+# Configuración local
+# ------------------------
+*.userprefs
+*.local.json
+*.secret.json
+appsettings.Development.json  # <- si tienes secretos en desarrollo
