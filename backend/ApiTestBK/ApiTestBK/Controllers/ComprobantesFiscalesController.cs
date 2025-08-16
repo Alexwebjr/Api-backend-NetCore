@@ -13,7 +13,8 @@ namespace ApiTestBK.Controllers
     {
         //Inyección de dependencias + Log
         private readonly ILogger<ComprobantesFiscalesController> _logger;
-        private readonly ApplicationDbContext _dbContext;
+
+        private readonly ApplicationDbContext _dbContext;//Se crear un repositorio de datos para mejorar la practica
 
         public ComprobantesFiscalesController(
             ILogger<ComprobantesFiscalesController> logger,
@@ -60,6 +61,7 @@ namespace ApiTestBK.Controllers
         }
 
         // GET: api/ComprobantesFiscales/00112345678
+        //SOLID SRP y ISP Ejemplo
         [HttpGet("listado/{rncCedula}")]
         public async Task<ActionResult<List<ComprobanteFiscalDto>>> GetByRncCedula(string rncCedula)
         {
