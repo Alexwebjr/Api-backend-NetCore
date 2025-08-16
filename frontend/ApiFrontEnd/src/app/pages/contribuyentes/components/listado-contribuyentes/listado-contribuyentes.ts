@@ -1,4 +1,4 @@
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, TitleCasePipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Contribuyente } from '../../../../core/models/contribuyente.model';
 import { ComprobanteFiscal } from '../../../../core/models/comprobante-fiscal.model';
@@ -7,7 +7,7 @@ import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-listado-contribuyentes',
-  imports: [TitleCasePipe, ListadoComprobantesFiscales],
+  imports: [TitleCasePipe, ListadoComprobantesFiscales, CurrencyPipe],
   templateUrl: './listado-contribuyentes.html',
   styles: ``
 })
@@ -18,6 +18,13 @@ export class ListadoContribuyentes {
 
   contribuyente: Contribuyente | null = null;
   comprobantes: ComprobanteFiscal[] = [];
+
+  get totalItbis(): number {
+    return this.contribuyente?.comprobantesFiscales?.reduce(
+      (acc, item) => acc + item.itbis18,
+      0
+    ) ?? 0;
+  }
 
   getAlertClass(estatus: string) {
     switch (estatus) {
@@ -32,8 +39,12 @@ export class ListadoContribuyentes {
     }
   }
 
-  verComprobantes(rncCedula: string) {
-    this.contribuyente = this.contribuyentes.find(c => c.rncCedula === rncCedula) || null;
+  selectedContribuyente(contribuyente: Contribuyente){
+    this.contribuyente = contribuyente;
+  }
+
+  verComprobantes(contribuyente: Contribuyente) {
+    this.selectedContribuyente(contribuyente);
     this.comprobantes = this.contribuyente?.comprobantesFiscales || [];
     console.log(this.contribuyente);
     console.log(this.comprobantes);

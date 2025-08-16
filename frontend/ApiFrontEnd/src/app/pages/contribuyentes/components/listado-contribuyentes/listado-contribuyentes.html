@@ -5,7 +5,7 @@
             <h2>Listado de Contribuyentes</h2>
         </div>
         <div class="col text-end">
-            Total: $
+            <span>Total Itbis: <strong>${{totalItbis | currency:'DOP'}}</strong></span>
         </div>
     </div>
 
@@ -13,6 +13,7 @@
         <table class="table table-bordered table-hover mt-3">
             <thead class="table-dark">
                 <tr>
+                <th></th>
                 <th>RNC / Cédula</th>
                 <th>Nombre</th>
                 <th>Tipo</th>
@@ -23,6 +24,14 @@
             <tbody>
                 @for (c of contribuyentes; track c.rncCedula){
                 <tr>
+                <td class="text-center">
+                    <input 
+                    type="checkbox"
+                    class="form-check-input"
+                    style="cursor: pointer;"
+                    [checked]="contribuyente?.rncCedula === c.rncCedula"
+                    (change)="selectedContribuyente(c)" />
+                </td>
                 <td>{{ c.rncCedula }}</td>
                 <td>{{ c.nombre }}</td>
                 <td>{{ c.tipo }}</td>
@@ -32,7 +41,7 @@
                     </span>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-light" (click)="verComprobantes(c.rncCedula)">Comprobantes Fiscales</button>
+                    <button type="button" class="btn btn-light" (click)="verComprobantes(c)">Comprobantes Fiscales</button>
                 </td>
                 </tr>
                 } 
