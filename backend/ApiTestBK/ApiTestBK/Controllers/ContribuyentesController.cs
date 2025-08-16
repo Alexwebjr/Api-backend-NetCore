@@ -30,7 +30,7 @@ namespace ApiTestBK.Controllers
 
         // GET: api/Contribuyentes
         [HttpGet]
-        public async Task<ActionResult<ContribuyenteDto>> GetAll()
+        public async Task<ActionResult<List<ContribuyenteDto>>> GetAll()
         {
             _logger.LogInformation("Entrando al mmétodo GetAll Contribuyentes");
 
