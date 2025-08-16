@@ -8,7 +8,7 @@ namespace ApiTestBK.Models.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public required string RncCedula { get; set; }
+        public required string RncCedula { get; set; } //Puede ser pk si solo existirá un contribuyente con el mismo rncCedula
         public required string Nombre { get; set; }
         public string? Tipo { get; set; } //en caso de que sea opcional
         public string? Estatus {get; set; }

@@ -1,6 +1,9 @@
-﻿using ApiTestBK.Models.Entities;
+﻿using ApiTestBK.Models;
+using ApiTestBK.Models.DTO;
+using ApiTestBK.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiTestBK.Controllers
 {
@@ -10,87 +13,37 @@ namespace ApiTestBK.Controllers
     {
         //Inyección de dependencias + Log
         private readonly ILogger<ComprobantesFiscalesController> _logger;
+        private readonly ApplicationDbContext _dbContext;
 
-        public ComprobantesFiscalesController(ILogger<ComprobantesFiscalesController> logger)
+        public ComprobantesFiscalesController(
+            ILogger<ComprobantesFiscalesController> logger,
+            ApplicationDbContext dbContext
+            )
         {
             _logger = logger;
+            this._dbContext = dbContext;
         }
-
-        //Temporal Data
-        private static readonly List<ComprobanteFiscal> Comprobantes = new()
-        {
-            new ComprobanteFiscal
-            {
-                Id = 1,
-                RncCedula = "00112345678",
-                NCF = "E310000000001",
-                Monto = 200.00m,
-                Itbis18 = 36.00m
-            },
-            new ComprobanteFiscal
-            {
-                Id = 2,
-                RncCedula = "00112345678",
-                NCF = "E310000000002",
-                Monto = 1500.00m,
-                Itbis18 = 270.00m
-            },
-            new ComprobanteFiscal
-            {
-                Id = 3,
-                RncCedula = "00187654321",
-                NCF = "E310000000003",
-                Monto = 500.00m,
-                Itbis18 = 90.00m
-            },
-            new ComprobanteFiscal
-            {
-                Id = 4,
-                RncCedula = "131456789",
-                NCF = "B010000000001",
-                Monto = 10000.00m,
-                Itbis18 = 1800.00m
-            },
-            new ComprobanteFiscal
-            {
-                Id = 5,
-                RncCedula = "131456789",
-                NCF = "B010000000002",
-                Monto = 7500.00m,
-                Itbis18 = 1350.00m
-            },
-            new ComprobanteFiscal
-            {
-                Id = 6,
-                RncCedula = "131456789",
-                NCF = "B010000000003",
-                Monto = 2500.00m,
-                Itbis18 = 450.00m
-            },
-            new ComprobanteFiscal
-            {
-                Id = 7,
-                RncCedula = "40199887766",
-                NCF = "E310000000004",
-                Monto = 1200.00m,
-                Itbis18 = 216.00m
-            },
-            new ComprobanteFiscal
-            {
-                Id = 8,
-                RncCedula = "40199887766",
-                NCF = "E310000000005",
-                Monto = 300.00m,
-                Itbis18 = 54.00m
-            }
-        };
 
         // GET: api/ComprobantesFiscales
         [HttpGet]
-        public ActionResult<IEnumerable<ComprobanteFiscal>> GetAll()
+        public async Task<ActionResult<ComprobanteFiscalDto>> GetAll()
         {
-            _logger.LogInformation("Entrando al mmétodo GetAll Comprobantes");
-            return Ok(Comprobantes);
+            _logger.LogInformation("Entrando al método GetAll Comprobantes");
+
+            var data = await _dbContext.ComprobantesFiscales
+               .AsNoTracking()
+               .Select(c => new ComprobanteFiscalDto
+               {
+                   RncCedula = c.RncCedula,
+                   NCF = c.NCF,
+                   Monto = c.Monto,
+                   Itbis18 = c.Itbis18
+               })
+               .ToListAsync();
+
+            if (data == null) return NotFound();
+
+            return Ok(data);
         }
 
         // GET: api/ComprobantesFiscales/00112345678
@@ -99,7 +52,7 @@ namespace ApiTestBK.Controllers
         {
             _logger.LogInformation("Entrando al mmétodo GetById Comprobantes");
 
-            var comprobantes = Comprobantes.FirstOrDefault(c => c.Id == id);
+            var comprobantes = _dbContext.ComprobantesFiscales.FirstOrDefault(c => c.Id == id);
             if (comprobantes == null)
                 return NotFound();
 
@@ -108,15 +61,24 @@ namespace ApiTestBK.Controllers
 
         // GET: api/ComprobantesFiscales/00112345678
         [HttpGet("listado/{rncCedula}")]
-        public ActionResult<IEnumerable<ComprobanteFiscal>> GetByRncCedula(string rncCedula)
+        public async Task<ActionResult<List<ComprobanteFiscalDto>>> GetByRncCedula(string rncCedula)
         {
             _logger.LogInformation("Entrando al mmétodo GetByRncCedula Comprobantes");
 
-            var comprobantes = Comprobantes.Where(c => c.RncCedula == rncCedula);
-            if (comprobantes == null)
-                return NotFound();
+            var data = await _dbContext.ComprobantesFiscales
+               .AsNoTracking()
+               .Where(c => c.RncCedula == rncCedula)
+               .Select(c => new ComprobanteFiscalDto
+               {
+                   RncCedula = c.RncCedula,
+                   NCF = c.NCF,
+                   Monto = c.Monto,
+                   Itbis18 = c.Itbis18
+               })
+               .ToListAsync();
 
-            return Ok(comprobantes);
+
+            return Ok(data);
         }
     }
 }

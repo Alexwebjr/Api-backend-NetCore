@@ -8,13 +8,12 @@ namespace ApiTestBK.Models.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public required string RncCedula { get; set; } //fk contribuyente
+        public required string RncCedula { get; set; }
         public string? NCF { get; set; }
         public decimal Monto { get; set; }
         public decimal Itbis18 { get; set; }
+        public int ContribuyenteId { get; set; } //Si RncCedula no es fk
 
-        //Propiedad de navegacion opcional en EF
-        [ForeignKey("RncCedula")]
         public Contribuyente Contribuyente { get; set; }
     }
 }

@@ -1,6 +1,9 @@
-﻿using ApiTestBK.Models.Entities;
+﻿using ApiTestBK.Models;
+using ApiTestBK.Models.DTO;
+using ApiTestBK.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiTestBK.Controllers
 {
@@ -8,109 +11,90 @@ namespace ApiTestBK.Controllers
     [ApiController]
     public class ContribuyentesController : ControllerBase
     {
-        //Inyección de dependencias + Log
+        //Inyección de dependencias + Log + DbContext
         private readonly ILogger<ContribuyentesController> _logger;
+        private readonly ApplicationDbContext _dbContext;
 
-        public ContribuyentesController(ILogger<ContribuyentesController> logger)
+        public ContribuyentesController(
+            ILogger<ContribuyentesController> logger,
+            ApplicationDbContext dbContext
+            )
         {
             _logger = logger;
+            this._dbContext = dbContext;
         }
 
 
         // Temporal Data
-        private static readonly List<Contribuyente> Contribuyentes = new()
-{
-    new Contribuyente
-    {
-        Id = 1,
-        RncCedula = "00112345678",
-        Nombre = "JUAN PEREZ",
-        Tipo = "PERSONA FISICA",
-        Estatus = "activo",
-        ComprobantesFiscales = new List<ComprobanteFiscal>
-        {
-            new ComprobanteFiscal { Id = 1, RncCedula = "00112345678", NCF = "E310000000001", Monto = 200.00m, Itbis18 = 36.00m },
-            new ComprobanteFiscal { Id = 2, RncCedula = "00112345678", NCF = "E310000000002", Monto = 1500.00m, Itbis18 = 270.00m }
-        }
-    },
-    new Contribuyente
-    {
-        Id = 2,
-        RncCedula = "00187654321",
-        Nombre = "MARIA LOPEZ",
-        Tipo = "PERSONA FISICA",
-        Estatus = "activo",
-        ComprobantesFiscales = new List<ComprobanteFiscal>
-        {
-            new ComprobanteFiscal { Id = 3, RncCedula = "00187654321", NCF = "E310000000003", Monto = 500.00m, Itbis18 = 90.00m }
-        }
-    },
-    new Contribuyente
-    {
-        Id = 3,
-        RncCedula = "13145678901",
-        Nombre = "EMPRESAS DOMINICANAS SRL",
-        Tipo = "PERSONA JURIDICA",
-        Estatus = "inactivo",
-        ComprobantesFiscales = new List<ComprobanteFiscal>
-        {
-            new ComprobanteFiscal { Id = 4, RncCedula = "13145678901", NCF = "B010000000001", Monto = 10000.00m, Itbis18 = 1800.00m },
-            new ComprobanteFiscal { Id = 5, RncCedula = "13145678901", NCF = "B010000000002", Monto = 7500.00m, Itbis18 = 1350.00m },
-            new ComprobanteFiscal { Id = 6, RncCedula = "13145678901", NCF = "B010000000003", Monto = 2500.00m, Itbis18 = 450.00m }
-        }
-    },
-    new Contribuyente
-    {
-        Id = 4,
-        RncCedula = "40211222333",
-        Nombre = "PEDRO GARCIA",
-        Tipo = "PERSONA FISICA",
-        Estatus = "suspendido",
-        ComprobantesFiscales = new List<ComprobanteFiscal>() // vacío
-    },
-    new Contribuyente
-    {
-        Id = 5,
-        RncCedula = "40199887766",
-        Nombre = "SOLUCIONES TECNICAS EIRL",
-        Tipo = "PERSONA JURIDICA",
-        Estatus = "activo",
-        ComprobantesFiscales = new List<ComprobanteFiscal>
-        {
-            new ComprobanteFiscal { Id = 7, RncCedula = "40199887766", NCF = "E310000000004", Monto = 1200.00m, Itbis18 = 216.00m },
-            new ComprobanteFiscal { Id = 8, RncCedula = "40199887766", NCF = "E310000000005", Monto = 300.00m, Itbis18 = 54.00m }
-        }
-    }
-};
 
 
         // GET: api/Contribuyentes
         [HttpGet]
-        public ActionResult<IEnumerable<Contribuyente>> GetAll()
+        public async Task<ActionResult<ContribuyenteDto>> GetAll()
         {
             _logger.LogInformation("Entrando al mmétodo GetAll Contribuyentes");
 
-            return Ok(Contribuyentes);
+            var data = await _dbContext.Contribuyentes
+           .AsNoTracking()
+           .Select(c => new ContribuyenteDto
+           {
+               RncCedula = c.RncCedula,
+               Nombre = c.Nombre,
+               Tipo = c.Tipo,
+               Estatus = c.Estatus,
+               ComprobantesFiscales = c.ComprobantesFiscales
+                   .Select(cf => new ComprobanteFiscalDto
+                   {
+                       RncCedula = cf.RncCedula,
+                       NCF = cf.NCF,
+                       Monto = cf.Monto,
+                       Itbis18 = cf.Itbis18
+                   })
+                   .ToList()
+           })
+           .ToListAsync();
+            //Podemos usar Lazy loading para que sea mas eficiente
+
+            return Ok(data);
         }
        
         // GET: api/Contribuyentes/00112345678
         [HttpGet("{rncCedula}")]
-        public ActionResult<Contribuyente> GetByRncCedula(string rncCedula)
+        public async Task<ActionResult<ContribuyenteDto>> GetByRncCedula(string rncCedula)
         {
-            _logger.LogInformation("Entrando al mmétodo Get Contribuyente by RncCedula");
+            _logger.LogInformation("Entrando al método Get Contribuyente by RncCedula {rncCedula}", rncCedula);
 
-            var contribuyente = Contribuyentes.FirstOrDefault(c => c.RncCedula == rncCedula);
-            if (contribuyente == null)
-                return NotFound();
+            var data = await _dbContext.Contribuyentes
+            .AsNoTracking()
+            .Where(c => c.RncCedula == rncCedula)
+            .Select(c => new ContribuyenteDto
+            {
+                RncCedula = c.RncCedula,
+                Nombre = c.Nombre,
+                Tipo = c.Tipo,
+                Estatus = c.Estatus,
+                ComprobantesFiscales = c.ComprobantesFiscales
+                    .Select(cf => new ComprobanteFiscalDto
+                    {
+                        RncCedula = cf.RncCedula,
+                        NCF = cf.NCF,
+                        Monto = cf.Monto,
+                        Itbis18 = cf.Itbis18
+                    })
+                    .ToList()
+            })
+            .FirstOrDefaultAsync();
 
-            return Ok(contribuyente);
+            if (data == null) return NotFound();
+
+            return Ok(data);
         }
 
         //// GET: api/Contribuyentes/2
         //[HttpGet("{id}")]
         //public ActionResult<Contribuyente> GetById(int id)
         //{
-        //    var contribuyente = Contribuyentes.FirstOrDefault(c => c.Id == id);
+        //    var contribuyente = _dbContext.Contribuyentes.FirstOrDefault(c => c.Id == id);
         //    if (contribuyente == null)
         //        return NotFound();
 
